@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotoscope - Multimedia Portfolio</title>
+    <style>
+        /* Import Albert Sans Font */
+        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@600;900&display=swap');
+
+        :root {
+            --bg-green: #00b14f;
+            --card-yellow: #eac54f;
+            --card-blue: #5b9bd5;
+            --vid-purple: #9b72ff;
+            --pink-banner: #ff9494;
+            --grey-banner: #b5b5b5;
+            --border-width: 4px;
+            --shadow-offset: 6px;
+            --shadow-color: #000;
+        }
+
+        /* Global Reset & Typography */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Albert Sans', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y proximity; 
+        }
+
+        body {
+            background-color: #f4f4f4;
+            color: #000;
+            font-weight: 600; 
+            font-size: 14px;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .black-font {
+            font-weight: 900; 
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Neo-Brutalist Utility Classes */
+        .brutal-box {
+            border: var(--border-width) solid #000;
+            border-radius: 16px;
+            background-color: #fff;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--shadow-color);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .brutal-btn {
+            border: 3px solid #000;
+            border-radius: 8px;
+            background-color: #888; 
+            color: #fff;
+            padding: 8px 24px;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--shadow-color);
+            transition: all 0.1s ease-in-out;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .brutal-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--shadow-color);
+            background-color: #777;
+        }
+
+        /* Header / Nav (Matches Baseline) */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 1000;
+            pointer-events: none; 
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 150px; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .header-left a {
+            pointer-events: auto;
+            display: inline-block;
+        }
+
+        .header-left img {
+            height: 40px; 
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            pointer-events: auto;
+        }
+
+        /* Structural Padding */
+        .section-padding {
+            padding: 60px 5vw;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Animated Separator Lines */
+        .separator-container {
+            position: relative;
+            margin: 80px 0;
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            height: 50px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .animated-line {
+            height: 4px;
+            width: 100%;
+            background-image: repeating-linear-gradient(to right, #000 0, #000 24px, transparent 24px, transparent 48px);
+            background-size: 48px 100%;
+        }
+
+        .line-top { animation: scroll-left 3s linear infinite; }
+        .line-bottom { animation: scroll-right 3s linear infinite; }
+
+        @keyframes scroll-left {
+            0% { background-position: 0 0; }
+            100% { background-position: -48px 0; }
+        }
+
+        @keyframes scroll-right {
+            0% { background-position: 0 0; }
+            100% { background-position: 48px 0; }
+        }
+
+        /* Angled Banners */
+        .angled-banner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-4deg);
+            color: #000;
+            padding: 15px 40px;
+            font-size: 48px;
+            border: 4px solid #000;
+            box-shadow: 6px 6px 0px #000;
+            border-radius: 12px;
+            white-space: nowrap;
+            z-index: 2; 
+        }
+
+        .banner-pink { background-color: var(--pink-banner); }
+        .banner-grey { background-color: var(--grey-banner); }
+
+        /* Video Placeholders */
+        .video-placeholder {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: var(--vid-purple);
+            border: var(--border-width) solid #000;
+            box-shadow: 8px 8px 0px #000;
+            border-radius: 8px;
+            overflow: hidden; 
+            position: relative;
+        }
+
+        .video-placeholder iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: transparent;
+        }
+
+        /* Section Layouts */
+        #rotoscope-hero {
+            padding-top: 150px; /* Offset for fixed header */
+        }
+
+        .hero-video-container {
+            max-width: 1000px;
+            margin: 40px auto 0;
+        }
+
+        .video-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .video-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .video-item {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .video-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .centered-meta {
+            align-items: center;
+            text-align: center;
+        }
+
+        .video-meta h2 {
+            font-size: 28px;
+        }
+
+        .video-meta p {
+            font-size: 14px;
+        }
+
+        /* Section 4: Tools Used */
+        #tools-section {
+            padding-bottom: 120px;
+        }
+
+        .tools-box {
+            position: relative;
+            max-width: 800px;
+            margin: 100px auto 0;
+            border: 4px dashed #000;
+            border-radius: 30px;
+            background-color: #fff;
+            padding: 80px 40px 60px; /* Extra padding top for banner */
+        }
+
+        .tools-banner {
+            /* Position banner exactly on the top border line */
+            top: 0; 
+        }
+
+        .tools-list {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 400px;
+            margin: 0 auto; /* Center list inside the box */
+        }
+
+        .tool-item {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .tool-icon {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 16px;
+            padding: 5px; /* In case images need breathing room */
+        }
+
+        .tool-text {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .tool-text h3 {
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        /* Footer & Scroll Snapping */
+        .back-to-top {
+            display: block;
+            background-color: #111;
+            color: #fff;
+            text-align: center;
+            padding: 25px;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            border-top: 2px solid #000;
+            scroll-snap-align: end; 
+        }
+
+        .back-to-top:hover {
+            background-color: #222;
+        }
+
+        footer {
+            background-color: #0a0a0a;
+            color: #fff;
+            padding: 60px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 14px;
+            scroll-snap-align: end; 
+        }
+
+        .footer-left .red-text {
+            color: #ff6b6b; 
+            font-weight: 900;
+        }
+
+        .footer-left p { margin-top: 5px; }
+        .footer-right { text-align: right; }
+        .footer-right p { line-height: 1.5; }
+
+    </style>
+</head>
+<body id="top">
+
+    <header>
+        <div class="header-left">
+            <a href="index.html">
+                <img src="Logo.png" alt="Multimedia Logo">
+            </a>
+        </div>
+        <div class="header-right">
+            <a href="RotoPage.html" class="brutal-btn">Rotoscope</a>
+            <a href="BlenderPage.html" class="brutal-btn">3D Render</a>
+        </div>
+    </header>
+
+    <section id="rotoscope-hero" class="section-padding">
+        <div class="separator-container">
+            <div class="animated-line line-top"></div>
+            <div class="angled-banner banner-pink black-font">Rotoscope</div>
+            <div class="animated-line line-bottom"></div>
+        </div>
+
+        <div class="hero-video-container">
+            <div class="video-placeholder">
+                <iframe 
+  src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" 
+  title="Rotoscope Hero Video" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
+            </div>
+        </div>
+    </section>
+
+    <section id="original-media" class="section-padding">
+        <div class="video-grid-2">
+            <div class="video-item">
+                <div class="video-placeholder">
+                    <iframe src="https://www.youtube.com/embed/Rk2nzPhlr0A" title="Original Video" allowfullscreen></iframe>
+                </div>
+                <div class="video-meta centered-meta">
+                    <h2 class="black-font">Original Video</h2>
+                    <p>Original Video by: Sandy Ng</p>
+                </div>
+            </div>
+
+            <div class="video-item">
+                <div class="video-placeholder">
+                    <iframe src="" title="Original Song" allowfullscreen></iframe>
+                </div>
+                <div class="video-meta centered-meta">
+                    <h2 class="black-font">Original Song</h2>
+                    <p><em>What Was I Made For</em> by Billie Eilish</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="progress" class="section-padding">
+        <div class="separator-container">
+            <div class="animated-line line-top"></div>
+            <div class="angled-banner banner-pink black-font">Progress</div>
+            <div class="animated-line line-bottom"></div>
+        </div>
+
+        <div class="video-grid-3">
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="https://youtube.com/embed/orscBStOxzc" title="Progress 1-5" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">1-5</p></div>
+            </div>
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="" title="Progress 6-10" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">6-10</p></div>
+            </div>
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="" title="Progress 11-15" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">11-15</p></div>
+            </div>
+            
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="" title="Progress 16-20" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">16-20</p></div>
+            </div>
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="" title="Progress 21-25" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">21-25</p></div>
+            </div>
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="" title="Progress 26-30" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">26-30</p></div>
+            </div>
+
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="" title="Progress 31-35" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">31-35</p></div>
+            </div>
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="" title="Progress 36-40" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">36-40</p></div>
+            </div>
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="" title="Progress 41-45" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">41-45</p></div>
+            </div>
+
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="" title="Progress 47-50" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">47-50</p></div>
+            </div>
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="" title="Progress 51-55" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">51-55</p></div>
+            </div>
+            <div class="video-item">
+                <div class="video-placeholder"><iframe src="" title="Progress 56-60" allowfullscreen></iframe></div>
+                <div class="video-meta centered-meta"><p class="black-font">56-60</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="tools-section" class="section-padding">
+        <div class="tools-box">
+            <div class="angled-banner banner-grey black-font tools-banner">Tools Used</div>
+            
+            <div class="tools-list">
+                <div class="tool-item">
+                    <img src="CAPCUT_icon.png" alt="Capcut Logo" class="brutal-box tool-icon">
+                    <div class="tool-text">
+                        <h3 class="black-font">Capcut</h3>
+                        <p>v.1.20</p>
+                    </div>
+                </div>
+
+                <div class="tool-item">
+                    <img src="AE_icon.png" alt="Adobe After Effects Logo" class="brutal-box tool-icon">
+                    <div class="tool-text">
+                        <h3 class="black-font">Adobe After Effects</h3>
+                        <p>2026</p>
+                    </div>
+                </div>
+
+                <div class="tool-item">
+                    <img src="PPT_icon.png" alt="Microsoft Office Logo" class="brutal-box tool-icon">
+                    <div class="tool-text">
+                        <h3 class="black-font">Microsoft Office</h3>
+                        <p>2024</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <a href="#top" class="back-to-top black-font">BACK TO TOP</a>
+    
+    <footer>
+        <div class="footer-left">
+            <span class="red-text">All content on this website is strictly for academic use.</span>
+            <p>No content on the website is monetized, and attribution is given to specific resources.</p>
+        </div>
+        <div class="footer-right">
+            <p>Project by: BAYANI, John Emmanuel V.<br>BSIT-S-T-2A-T 2025-2026</p>
+        </div>
+    </footer>
+
+</body>
+</html>
