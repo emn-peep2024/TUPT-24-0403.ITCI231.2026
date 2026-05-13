@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found - Multimedia Portfolio</title>
+    <style>
+        /* Import Albert Sans Font */
+        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@500;600;900&display=swap');
+
+        :root {
+            --border-width: 4px;
+            --shadow-offset: 6px;
+            --shadow-color: #000;
+        }
+
+        /* Global Reset & Typography */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Albert Sans', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y proximity; /* Restored from your original code */
+        }
+
+        body {
+            background-color: #f4f4f4;
+            color: #000;
+            font-weight: 600; 
+            font-size: 14px;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, .black-font {
+            font-weight: 900; 
+        }
+        
+        .medium-font {
+            font-weight: 500;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Neo-Brutalist Utility Classes */
+        .brutal-btn {
+            border: 3px solid #000;
+            border-radius: 8px;
+            background-color: #888; 
+            color: #fff;
+            padding: 8px 24px;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--shadow-color);
+            transition: all 0.1s ease-in-out;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .brutal-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--shadow-color);
+            background-color: #777;
+        }
+
+        /* Header / Nav (Matches Baseline) */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 1000;
+            pointer-events: none; 
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 150px; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .header-left a {
+            pointer-events: auto;
+            display: inline-block;
+        }
+
+        .header-left img {
+            height: 40px; 
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            pointer-events: auto;
+        }
+
+        /* 404 Main Content Layout */
+        .error-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 160px 20px 60px; /* Top padding to clear the fixed header */
+            min-height: 100vh; /* Forces the section to take the full screen, pushing the footer down */
+            scroll-snap-align: start; /* Snaps to the top of the 404 content */
+        }
+
+        .error-image {
+            width: 280px; 
+            height: auto;
+            margin-bottom: 25px;
+            border: none; 
+        }
+
+        .error-content h1 {
+            font-size: 48px;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .error-content p {
+            font-size: 20px;
+            line-height: 1.5;
+        }
+
+        /* Footer & Scroll Snapping */
+        .back-to-top {
+            display: block;
+            background-color: #111;
+            color: #fff;
+            text-align: center;
+            padding: 25px;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            border-top: 2px solid #000;
+            scroll-snap-align: end; /* Restored */
+        }
+
+        .back-to-top:hover {
+            background-color: #222;
+        }
+
+        footer {
+            background-color: #0a0a0a;
+            color: #fff;
+            padding: 60px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 14px;
+            scroll-snap-align: end; /* Restored */
+        }
+
+        .footer-left .red-text {
+            color: #ff6b6b; 
+            font-weight: 900;
+        }
+
+        .footer-left p { margin-top: 5px; }
+        .footer-right { text-align: right; }
+        .footer-right p { line-height: 1.5; }
+    </style>
+</head>
+<body id="top">
+
+    <header>
+        <div class="header-left">
+            <a href="index.html">
+                <img src="Logo.png" alt="Multimedia Logo">
+            </a>
+        </div>
+        <div class="header-right">
+            <a href="RotoPage.html" class="brutal-btn">Rotoscope</a>
+            <a href="BlenderPage.html" class="brutal-btn">3D Render</a>
+        </div>
+    </header>
+
+    <main class="error-content">
+        <img src="hope404.png" alt="404 Not Found" class="error-image">
+        <h1 class="black-font">Uh oh! There's nothing here...</h1>
+        <p class="medium-font">It might be better to navigate with the options at the header.<br>Go ahead, check it out!</p>
+    </main>
+
+    <a href="#top" class="back-to-top black-font">BACK TO TOP</a>
+    
+    <footer>
+        <div class="footer-left">
+            <span class="red-text">All content on this website is strictly for academic use.</span>
+            <p>No content on the website is monetized, and attribution is given to specific resources.</p>
+        </div>
+        <div class="footer-right">
+            <p>Project by: BAYANI, John Emmanuel V.<br>BSIT-S-T-2A-T 2025-2026</p>
+        </div>
+    </footer>
+
+</body>
+</html>
