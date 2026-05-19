@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Render - Multimedia Portfolio</title>
+    <style>
+        /* Import Albert Sans Font */
+        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@600;900&display=swap');
+
+        :root {
+            --bg-dark: #000;
+            --text-light: #fff;
+            --blue-banner: #0d6efd;
+            --vid-purple: #9b72ff;
+            --border-width: 4px;
+            --shadow-offset: 6px;
+            --shadow-color: #fff;
+        }
+
+        /* Global Reset & Typography */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Albert Sans', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y proximity; 
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-weight: 600; 
+            font-size: 14px;
+            overflow-x: hidden;
+            padding-top: 100px;
+        }
+
+        h1, h2, h3, h4, .heavy-font {
+            font-weight: 900; 
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Starfield Canvas */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Inverted Neo-Brutalist Classes */
+        .brutal-box-dark {
+            border: var(--border-width) solid var(--text-light);
+            border-radius: 16px;
+            background-color: var(--bg-dark);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--shadow-color);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .brutal-box-dark:hover {
+            transform: translate(2px, 2px);
+            box-shadow: calc(var(--shadow-offset) - 2px) calc(var(--shadow-offset) - 2px) 0px var(--shadow-color);
+        }
+
+        .brutal-btn-dark {
+            border: 3px solid var(--text-light);
+            border-radius: 8px;
+            background-color: #333; 
+            color: var(--text-light);
+            padding: 8px 24px;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--shadow-color);
+            transition: all 0.1s ease-in-out;
+        }
+
+        .brutal-btn-dark:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--shadow-color);
+            background-color: #444;
+        }
+
+        /* Header / Nav */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 1000;
+            pointer-events: none; 
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 150px; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .header-left a {
+            pointer-events: auto;
+            display: inline-block;
+        }
+
+        .header-left img { height: 40px; }
+        .header-right { display: flex; gap: 20px; pointer-events: auto; }
+
+        /* Structural Padding */
+        .section-padding {
+            padding: 60px 5vw;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Animated Separator Lines */
+        .separator-container {
+            position: relative;
+            margin: 80px 0;
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            height: 50px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .animated-line-white {
+            height: 4px;
+            width: 100%;
+            background-image: repeating-linear-gradient(to right, var(--text-light) 0, var(--text-light) 24px, transparent 24px, transparent 48px);
+            background-size: 48px 100%;
+        }
+
+        .line-top { animation: scroll-left 3s linear infinite; }
+        .line-bottom { animation: scroll-right 3s linear infinite; }
+
+        @keyframes scroll-left { 0% { background-position: 0 0; } 100% { background-position: -48px 0; } }
+        @keyframes scroll-right { 0% { background-position: 0 0; } 100% { background-position: 48px 0; } }
+
+        /* Angled Banner */
+        .angled-banner-blue {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-4deg);
+            background-color: var(--blue-banner);
+            color: var(--text-light);
+            padding: 15px 40px;
+            font-size: 48px;
+            border: 4px solid var(--text-light);
+            box-shadow: 6px 6px 0px var(--text-light);
+            border-radius: 12px;
+            white-space: nowrap;
+            z-index: 2; 
+        }
+
+        /* Video Placeholders (For YouTube Embeds) */
+        .vid-placeholder {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: var(--vid-purple);
+            border: var(--border-width) solid var(--text-light);
+            box-shadow: 6px 6px 0px var(--text-light);
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: #000;
+            font-size: 32px;
+            text-align: center;
+        }
+
+        .vid-placeholder iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+            object-fit: cover;
+        }
+
+        /* NEW: Flat GIF Placeholders without borders or text */
+        .gif-container {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: var(--vid-purple);
+            border-radius: 8px; 
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .gif-container img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        /* NEW: Flat cards for the calculator (no heavy shadow, no hover) */
+        .flat-card {
+            border: 2px solid var(--text-light);
+            border-radius: 16px;
+            background-color: var(--bg-dark);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Calculator Wrapper with Animated SVG Dashed Border */
+        .calc-wrapper {
+            position: relative;
+            margin: 100px auto 40px; /* Space for the banner */
+            max-width: 1100px;
+            padding: 80px 50px 50px;
+        }
+
+        .dash-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .dash-svg rect {
+            animation: dash-scroll 1.5s linear infinite;
+        }
+
+        @keyframes dash-scroll {
+            to { stroke-dashoffset: -40; } /* Animates the SVG dashes */
+        }
+
+        .calc-banner {
+            top: 0; /* Aligns with the top border of the wrapper */
+        }
+
+        .calc-content {
+            position: relative;
+            z-index: 1; /* Keeps content above the SVG */
+        }
+
+        /* Calculator Inner Layout */
+        .earth-input-box {
+            display: flex;
+            gap: 30px;
+            padding: 30px;
+            margin-bottom: 40px;
+            align-items: center;
+        }
+
+        .earth-input-box .gif-container {
+            width: 150px; /* Squared off to match planet grid */
+            height: 150px;
+            flex-shrink: 0;
+        }
+
+        .input-details { flex-grow: 1; }
+        
+        .input-details label {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .brutal-input {
+            width: 100%;
+            background: #111;
+            border: 3px solid var(--text-light);
+            color: var(--text-light);
+            padding: 15px;
+            font-size: 24px;
+            font-family: 'Albert Sans', sans-serif;
+            font-weight: 900;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        .input-details p { color: #aaa; }
+
+        .planet-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .planet-card h3 { font-size: 18px; }
+        .planet-card .calculated-age { font-size: 36px; line-height: 1; margin: 5px 0; }
+        .planet-card .sub-stats { color: #aaa; font-size: 12px; line-height: 1.4; }
+
+        .calc-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 20px;
+        }
+
+        .glossary p { color: #ccc; line-height: 1.5; }
+
+        /* About Planets Layout */
+        .about-list {
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+            margin-top: 60px;
+        }
+
+        .about-item {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .about-item .vid-placeholder { width: 400px; flex-shrink: 0; }
+        
+        .about-text h2 { font-size: 42px; margin-bottom: 15px; }
+        .about-text p { font-size: 16px; line-height: 1.6; color: #ddd; margin-bottom: 15px; }
+
+        /* Tools Used */
+        .tools-box {
+            position: relative;
+            max-width: 900px;
+            margin: 120px auto 40px;
+            border: 4px dashed var(--text-light);
+            border-radius: 30px;
+            background-color: var(--bg-dark);
+            padding: 60px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tools-box .angled-banner-blue { top: 0; }
+
+        .tool-info-left { display: flex; align-items: center; gap: 30px; }
+        .tool-icon { width: 100px; height: 100px; object-fit: contain; background: #fff; padding: 10px; border-radius: 16px; }
+        .tool-info-left h2 { font-size: 36px; }
+        .tool-info-left p { font-size: 18px; color: #ccc; }
+
+        .textures-link { text-align: center; margin-bottom: 80px; color: #aaa; }
+        .textures-link a { color: var(--blue-banner); text-decoration: underline; }
+
+        /* Footer */
+        .back-to-top {
+            display: block;
+            background-color: #222;
+            color: #fff;
+            text-align: center;
+            padding: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border-top: 2px solid var(--text-light);
+            scroll-snap-align: end; 
+        }
+        .back-to-top:hover { background-color: #333; }
+
+        footer {
+            background-color: #111;
+            color: #fff;
+            padding: 60px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 14px;
+            scroll-snap-align: end; 
+        }
+
+        .footer-left .red-text { color: #ff6b6b; font-weight: 900; }
+        .footer-left p { margin-top: 5px; }
+        .footer-right { text-align: right; }
+        .footer-right p { line-height: 1.5; }
+    
+    </style>
+</head>
+<body id="top">
+
+    <canvas id="starfield"></canvas>
+
+    <header>
+        <div class="header-left">
+            <a href="HomePage.html">
+                <img src="Logo.png" alt="Multimedia Logo">
+            </a>
+        </div>
+        <div class="header-right">
+            <a href="RotoPage.html" class="brutal-btn-dark">Rotoscope</a>
+            <a href="BlenderPage.html" class="brutal-btn-dark">3D Render</a>
+        </div>
+    </header>
+
+    <section id="render-hero" class="section-padding" style="padding-top: 60px;">
+        <div class="separator-container">
+            <div class="animated-line-white line-top"></div>
+            <div class="angled-banner-blue heavy-font">3D Render</div>
+            <div class="animated-line-white line-bottom"></div>
+        </div>
+
+        <div class="vid-placeholder" style="max-width: 1000px; margin: 40px auto 0;">
+            <span class="heavy-font">YOUTUBE EMBED</span>
+            <iframe src="" title="3D Render Hero Video" allowfullscreen></iframe>
+        </div>
+    </section>
+
+    <section id="age-calculator" class="section-padding">
+        
+        <div class="calc-wrapper">
+            <svg class="dash-svg" width="100%" height="100%">
+                <rect x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" rx="30" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="20"></rect>
+            </svg>
+
+            <div class="angled-banner-blue heavy-font calc-banner">Age Calculator</div>
+            
+            <div class="calc-content">
+                
+                <div class="flat-card earth-input-box">
+                    <div class="gif-container">
+                        <img src="gif1.gif" alt="Earth GIF">
+                    </div>
+                    <div class="input-details">
+                        <label class="heavy-font" for="earth-age">My present age on Earth is...</label>
+                        <input type="number" id="earth-age" class="brutal-input" placeholder="Enter age..." min="0">
+                        <p>Revolution: 0 | Orbit: 365 ED / 1 EY | Sun Dist.: 1 AU</p>
+                    </div>
+                </div>
+
+                <div class="planet-grid">
+                    <div class="flat-card planet-card">
+                        <div class="gif-container"><img src="gif2.gif" alt="Mercury"></div>
+                        <h3 class="heavy-font">Mercury</h3>
+                        <h2 id="merc-age" class="heavy-font calculated-age">00.00</h2>
+                        <div class="sub-stats">
+                            <p id="merc-rev">Revolution: 0</p>
+                            <p>Orbit: 0.24 EY</p>
+                            <p>Sun Dist.: 0.39 AU</p>
+                        </div>
+                    </div>
+                    <div class="flat-card planet-card">
+                        <div class="gif-container"><img src="gif3.gif" alt="Venus"></div>
+                        <h3 class="heavy-font">Venus</h3>
+                        <h2 id="ven-age" class="heavy-font calculated-age">00.00</h2>
+                        <div class="sub-stats">
+                            <p id="ven-rev">Revolution: 0</p>
+                            <p>Orbit: 0.615 EY</p>
+                            <p>Sun Dist.: 0.72 AU</p>
+                        </div>
+                    </div>
+                    <div class="flat-card planet-card">
+                        <div class="gif-container"><img src="gif4.gif" alt="Mars"></div>
+                        <h3 class="heavy-font">Mars</h3>
+                        <h2 id="mars-age" class="heavy-font calculated-age">00.00</h2>
+                        <div class="sub-stats">
+                            <p id="mars-rev">Revolution: 0</p>
+                            <p>Orbit: 1.88 EY</p>
+                            <p>Sun Dist.: 1.52 AU</p>
+                        </div>
+                    </div>
+                    <div class="flat-card planet-card">
+                        <div class="gif-container"><img src="gif5.gif" alt="Jupiter"></div>
+                        <h3 class="heavy-font">Jupiter</h3>
+                        <h2 id="jup-age" class="heavy-font calculated-age">00.00</h2>
+                        <div class="sub-stats">
+                            <p id="jup-rev">Revolution: 0</p>
+                            <p>Orbit: 11.86 EY</p>
+                            <p>Sun Dist.: 5.20 AU</p>
+                        </div>
+                    </div>
+                    <div class="flat-card planet-card">
+                        <div class="gif-container"><img src="gif6.gif" alt="Saturn"></div>
+                        <h3 class="heavy-font">Saturn</h3>
+                        <h2 id="sat-age" class="heavy-font calculated-age">00.00</h2>
+                        <div class="sub-stats">
+                            <p id="sat-rev">Revolution: 0</p>
+                            <p>Orbit: 29.46 EY</p>
+                            <p>Sun Dist.: 9.58 AU</p>
+                        </div>
+                    </div>
+                    <div class="flat-card planet-card">
+                        <div class="gif-container"><img src="gif7.gif" alt="Uranus"></div>
+                        <h3 class="heavy-font">Uranus</h3>
+                        <h2 id="ura-age" class="heavy-font calculated-age">00.00</h2>
+                        <div class="sub-stats">
+                            <p id="ura-rev">Revolution: 0</p>
+                            <p>Orbit: 84.02 EY</p>
+                            <p>Sun Dist.: 19.18 AU</p>
+                        </div>
+                    </div>
+                    <div class="flat-card planet-card">
+                        <div class="gif-container"><img src="gif8.gif" alt="Neptune"></div>
+                        <h3 class="heavy-font">Neptune</h3>
+                        <h2 id="nep-age" class="heavy-font calculated-age">00.00</h2>
+                        <div class="sub-stats">
+                            <p id="nep-rev">Revolution: 0</p>
+                            <p>Orbit: 164.77 EY</p>
+                            <p>Sun Dist.: 30.07 AU</p>
+                        </div>
+                    </div>
+                    <div class="flat-card planet-card">
+                        <div class="gif-container"><img src="gif9.gif" alt="Pluto"></div>
+                        <h3 class="heavy-font">Pluto</h3>
+                        <h2 id="plu-age" class="heavy-font calculated-age">00.00</h2>
+                        <div class="sub-stats">
+                            <p id="plu-rev">Revolution: 0</p>
+                            <p>Orbit: 247.94 EY</p>
+                            <p>Sun Dist.: 39.48 AU</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-footer">
+                    <div class="glossary">
+                        <p><strong>Glossary:</strong></p>
+                        <p>ED = Earth Days</p>
+                        <p>EY = Earth Years</p>
+                        <p>AU = Astronomical Unit</p>
+                    </div>
+                    <a href="AgeCalculatorCode.html" class="brutal-btn-dark">View Code</a>
+                </div>
+            </div> </div> </section>
+
+     <section id="about-planets" class="section-padding">
+        <div class="separator-container">
+            <div class="animated-line-white line-top"></div>
+            <div class="angled-banner-blue heavy-font">About All Planets!</div>
+            <div class="animated-line-white line-bottom"></div>
+        </div>
+
+        <div class="about-list">
+            <!-- Repeatable Item Layout -->
+            <div class="about-item">
+                <div class="vid-placeholder"><span class="heavy-font">YOUTUBE EMBED</span><iframe src="https://www.youtube.com/embed/5uNovf4ruCs?si=xwr11fVTlW_Zxm_o"  title="Sun Video" allowfullscreen></iframe></div>
+                <div class="about-text">
+                    <h2 class="heavy-font">Sun</h2>
+                    <p>At the very heart of our solar system sits the Sun, a nearly perfect sphere of glowing hot plasma that provides the vital energy and light keeping our planet alive.
+
+It accounts for about 99.8% of the total mass in our solar neighborhood, exerting an immense gravitational pull that holds everything from the largest planets to the smallest asteroids firmly in their orbits. Deep inside its core, extreme temperatures and pressure fuse hydrogen atoms into helium in a process called nuclear fusion, generating a massive amount of energy that travels outward. Without this massive star radiating warmth across the vacuum of space, Earth would simply be a dark, frozen ball of rock completely incapable of supporting any life.
+</p>
+                </div>
+            </div>
+            <div class="about-item">
+                <div class="vid-placeholder"><span class="heavy-font">YOUTUBE EMBED</span><iframe src="https://www.youtube.com/embed/v4R1Mm8wHvM?si=QMlgdHBGSM0yF4bc"  title="Mercury Video" allowfullscreen></iframe></div>
+                <div class="about-text">
+                    <h2 class="heavy-font">Mercury</h2>
+                    <p>LAs the smallest planet in our solar system and the closest one to the Sun, Mercury is a fast-moving world that zips around its orbit in just 88 Earth days.
+
+Because it's so close to the Sun and lacks a real atmosphere to trap heat, it experiences some of the most extreme temperature swings in the solar system, going from a scorching 430°C during the day to a freezing -180°C at night. Its dusty, heavily cratered surface looks a lot like our Moon, bearing the scars of countless impacts over billions of years. Despite its harsh environment, this tiny planet holds fascinating secrets, including a massive iron core and traces of water ice hidden in deep, permanently shadowed craters.
+</p>
+                </div>
+            </div>
+            <div class="about-item">
+                <div class="vid-placeholder"><span class="heavy-font">YOUTUBE EMBED</span><iframe src="https://www.youtube.com/embed/J8TVYsb_N04?si=S8f5yMsfMZC4OaWB"  title="Venus Video" allowfullscreen></iframe></div>
+                <div class="about-text">
+                    <h2 class="heavy-font">Venus</h2>
+                    <p>Often called Earth's twin because of its similar size and structure, Venus is actually a completely different world hidden beneath a thick, toxic blanket of yellowish clouds.
+
+It takes the title of the hottest planet in our solar system because its heavy atmosphere traps the Sun's heat in a runaway greenhouse effect, pushing surface temperatures up to a blistering 475°C. Beneath those crushing clouds lies a harsh, volcanic landscape covered in towering mountains and vast plains of hardened lava. To make things even more unusual, Venus rotates backward on its axis incredibly slowly, which means a single day there actually lasts longer than its entire year.
+</p>
+                </div>
+            </div>
+            <div class="about-item">
+                <div class="vid-placeholder"><span class="heavy-font">YOUTUBE EMBED</span><iframe src="https://www.youtube.com/embed/2N0epL3FExc?si=-DyCvL7cgSuRaHRr" title="Earth Video" allowfullscreen></iframe></div>
+                <div class="about-text">
+                    <h2 class="heavy-font">Earth</h2>
+                    <p>Our home planet, Earth, is the third world from the Sun and the only place in the universe known to harbor life.
+
+Its surface is uniquely dominated by vast liquid water oceans that cover about 71% of the globe, creating a vibrant blue oasis against the dark backdrop of space. The dynamic atmosphere provides a perfect balance of nitrogen and oxygen while shielding the surface from harmful solar radiation and regulating the global climate. Underneath this bustling biosphere lies a restless interior with shifting tectonic plates and a churning liquid metal core that generates a protective magnetic shield.</p>
+                </div>
+            </div>
+            <div class="about-item">
+                <div class="vid-placeholder"><span class="heavy-font">YOUTUBE EMBED</span><iframe src="https://www.youtube.com/embed/9wPKcFI8Tus?si=XiIh_4Jpzu3bNGs7" title="Moon Video" allowfullscreen></iframe></div>
+                <div class="about-text">
+                    <h2 class="heavy-font">Moon</h2>
+                    <p>As Earth's only natural satellite and our closest cosmic companion, the Moon hangs as a bright, comforting presence in our night sky. 
+
+Its dusty surface is heavily cratered from billions of years of asteroid impacts and features dark, flat plains of ancient, hardened lava known as maria.  The Moon's gravitational pull gently tugs on Earth, driving the ocean tides that circulate water across our globe and stabilizing our planet's axial tilt. Because it is locked in a synchronous rotation with Earth, we always see the exact same side, making the mysterious far side a major focus for modern space exploration.
+
+</p>
+                </div>
+            </div>
+            <div class="about-item">
+                <div class="vid-placeholder"><span class="heavy-font">YOUTUBE EMBED</span><iframe src="https://www.youtube.com/embed/2txlUIBTvM4?si=AOYLK1ZkuiysjYdz" title="Mars Video" allowfullscreen></iframe></div>
+                <div class="about-text">
+                    <h2 class="heavy-font">Mars</h2>
+                    <p>Known as the "Red Planet," Mars is the fourth world from the Sun and has captivated humanity's imagination for generations. 
+
+Its distinct rusty color comes from iron oxide, or rust, covering its dusty surface, which sits under a very thin, carbon dioxide-dominated atmosphere.  Despite its dry and frozen appearance today, the planet is home to incredible geological features like Olympus Mons, the largest volcano in the solar system, and a massive canyon system called Valles Marineris. Scientists actively study Mars with rovers and orbiters to search for signs of ancient life, driven by evidence that liquid water once flowed across its now-barren plains.</p>
+                </div>
+            </div>
+            <div class="about-item">
+                <div class="vid-placeholder"><span class="heavy-font">YOUTUBE EMBED</span><iframe src="https://www.youtube.com/embed/sYaV9rOHaIg?si=zcZCYVc1xYY_iIsB"  title="Jupiter Video" allowfullscreen></iframe></div>
+                <div class="about-text">
+                    <h2 class="heavy-font">Jupiter</h2>
+                    <p>Dominating our solar system as the largest planet by far, Jupiter is a massive gas giant so enormous that more than 1,300 Earths could fit inside it.  
+
+Unlike the inner rocky worlds, it lacks a true solid surface and is made up almost entirely of thick, swirling layers of hydrogen and helium gas. Its most iconic feature is the Great Red Spot, a colossal storm larger than Earth itself that has been raging for centuries alongside a massive family of dozens of moons. Because of its incredible mass, Jupiter exerts a powerful gravitational pull that acts like a cosmic shield, pulling in stray comets and asteroids that might otherwise head toward the inner planets.</p>
+                </div>
+            </div>
+            <div class="about-item">
+                <div class="vid-placeholder"><span class="heavy-font">YOUTUBE EMBED</span><iframe src="https://www.youtube.com/embed/Ao-SuPb_Zss?si=woGHocsYq4Hy0pLN"  title="Saturn Video" allowfullscreen></iframe></div>
+                <div class="about-text">
+                    <h2 class="heavy-font">Saturn</h2>
+                    <p>As the sixth planet from the Sun and the second-largest in our solar system, Saturn is a massive gas giant famous for its breathtaking and intricate ring system.
+
+These magnificent rings are not solid structures but are instead made of billions of individual chunks of water ice, rocks, and dust ranging in size from tiny grains to giant boulders. Because it is mostly made up of hydrogen and helium, this giant planet is incredibly light for its size, making it the only planet in our solar system that is less dense than water. Beyond its majestic rings, Saturn hosts a dynamic atmosphere with intense storms and over a hundred fascinating moons, including the massive, cloud-covered world of Titan.</p>
+                </div>
+            </div>
+            <div class="about-item">
+                <div class="vid-placeholder"><span class="heavy-font">YOUTUBE EMBED</span><iframe src="https://www.youtube.com/embed/KAs49QlgRTE?si=YvU_fTKszy3QxcvV"  title="Uranus Video" allowfullscreen></iframe></div>
+                <div class="about-text">
+                    <h2 class="heavy-font">Uranus</h2>
+                    <p>Uranus is the seventh planet from the Sun and stands out as a unique ice giant that rotates completely on its side. 
+
+This unusual 98-degree axial tilt means the planet essentially rolls around the Sun like a bowling ball, causing extreme seasons that last for decades. Its striking, pale blue-green color comes from methane gas in its atmosphere, which absorbs red light and reflects the cool blue tones we see from space. Beneath its chilly exterior of water, ammonia, and methane ices, this freezing world hosts a faint system of rings and a family of 28 distinct moons named after literary characters.</p>
+                </div>
+            </div>
+            <div class="about-item">
+                <div class="vid-placeholder"><span class="heavy-font">YOUTUBE EMBED</span><iframe src="https://www.youtube.com/embed/tCNM_gQcuRA?si=gop7JPH-H3zHGo2B" title="Neptune Video" allowfullscreen></iframe></div>
+                <div class="about-text">
+                    <h2 class="heavy-font">Neptune</h2>
+                    <p>As the eighth and most distant planet from the Sun, Neptune is a cold, dark world swept by the most powerful winds in the solar system.
+
+Its brilliant azure color comes from methane in its dynamic atmosphere, which often features massive dark storms that dwarf our own planet's weather systems. Beneath those freezing outer cloud layers sits a dense, churning fluid of water, ammonia, and methane ices surrounding a heavy, rocky core. This enigmatic ice giant also possesses a faint ring system and is orbited by a family of 16 moons, including the icy Triton, which orbits the planet in the opposite direction of its rotation.</p>
+                </div>
+            </div>
+            <div class="about-item">
+                <div class="vid-placeholder"><span class="heavy-font">YOUTUBE EMBED</span><iframe src="https://www.youtube.com/embed/no20jO3A9kI?si=m6DiP1Z-r-jsf7K7" title="Pluto Video" allowfullscreen></iframe></div>
+                <div class="about-text">
+                    <h2 class="heavy-font">Pluto</h2>
+                    <p>Pluto is a dwarf planet located in the outer reaches of our solar system, beyond the orbit of Neptune. Once considered the ninth planet, it was reclassified as a dwarf planet in 2006 by the International Astronomical Union. This icy world has a highly elliptical and tilted orbit, causing it to sometimes be closer to the Sun than Neptune. Pluto is known for its heart-shaped glacier and its large moon, Charon, which is roughly half the size of Pluto itself.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="tools" class="section-padding">
+        <div class="tools-box">
+            <div class="angled-banner-blue heavy-font">Tools Used</div>
+            
+            <div class="tool-info-left">
+                <img src="Blender_icon.png" alt="Blender Logo" class="brutal-box-dark tool-icon">
+                <div>
+                    <h2 class="heavy-font">Blender</h2>
+                    <p class="heavy-font">v.4.4.0</p>
+                </div>
+            </div>
+
+            <a href="#" class="brutal-btn-dark">View Code</a>
+        </div>
+        
+        <p class="textures-link">Planet textures downloaded from: <a href="https://www.solarsystemscope.com/textures/" target="_blank">solarsystemscope</a></p>
+    </section>
+
+    <a href="#top" class="back-to-top heavy-font">BACK TO TOP</a>
+    
+    <footer>
+        <div class="footer-left">
+            <span class="red-text">All content on this website is strictly for academic use.</span>
+            <p>No content on the website is monetized, and attribution is given to specific resources.</p>
+        </div>
+        <div class="footer-right">
+            <p>Project by: BAYANI, John Emmanuel V.<br>BSIT-S-T-2A-T 2025-2026</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Planetary Age Logic ---
+        const planetsData = {
+            merc: 0.24,
+            ven: 0.615,
+            mars: 1.88,
+            jup: 11.86,
+            sat: 29.46,
+            ura: 84.02,
+            nep: 164.77,
+            plu: 247.94
+        };
+
+        const earthInput = document.getElementById('earth-age');
+
+        earthInput.addEventListener('input', (e) => {
+            const earthAge = parseFloat(e.target.value) || 0;
+
+            for (const [prefix, orbitEY] of Object.entries(planetsData)) {
+                const calculatedAge = earthAge / orbitEY;
+                const revCount = Math.floor(calculatedAge);
+
+                document.getElementById(`${prefix}-age`).textContent = calculatedAge.toFixed(2);
+                document.getElementById(`${prefix}-rev`).textContent = `Revolution: ${revCount}`;
+            }
+        });
+
+        // --- Canvas Parallax Starfield ---
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let stars = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        // Initialize stars with random positions and a parallax speed factor
+        function initStars() {
+            stars = [];
+            const numStars = Math.floor((window.innerWidth * window.innerHeight) / 3000); // Density
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    size: Math.random() * 1.5 + 0.5,
+                    parallaxFactor: Math.random() * 0.3 + 0.05 // Speed multiplier for scroll
+                });
+            }
+        }
+
+        // Draw loop attached to scroll position
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#ffffff';
+            
+            const scrollY = window.scrollY;
+
+            stars.forEach(star => {
+                // Calculate y position based on scroll. Modulo keeps it wrapping around screen.
+                let offsetY = (star.y - (scrollY * star.parallaxFactor)) % height;
+                if (offsetY < 0) offsetY += height; 
+
+                ctx.beginPath();
+                ctx.arc(star.x, offsetY, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', () => {
+            resize();
+            initStars();
+        });
+
+        // Setup and run
+        resize();
+        initStars();
+        draw();
+    </script>
+</body>
+</html>
