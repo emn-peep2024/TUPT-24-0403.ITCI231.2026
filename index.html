@@ -26,14 +26,26 @@
             font-family: 'Albert Sans', sans-serif;
         }
 
-        /* Added scroll snapping logic here */
         html {
             scroll-behavior: smooth;
             scroll-snap-type: y proximity; 
         }
 
         body {
-            background-color: #f4f4f4;
+            background-color: #ffffff;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+            
+            /* ========================================================
+               CHANGE THE GRID SIZE HERE: 
+               Increase or decrease '80px 80px' to change the square sizes 
+               ======================================================== */
+            background-size: 80px 80px; 
+            
+            /* Changed to 'scroll' so it moves with the page content */
+            background-attachment: scroll;
+            
             color: #000;
             font-weight: 600; 
             font-size: 14px;
@@ -105,11 +117,10 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 150px; /* Stretch it out so the fade is smooth */
+            height: 150px; 
             background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            /* This mask fades the blur itself so there's no hard line */
             mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
             -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
             z-index: -1;
@@ -130,13 +141,24 @@
         /* Section 1: Hero Cover */
         #hero {
             height: 100vh;
-            background-color: var(--bg-green);
-            background-image: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 20%);
+            background-image: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden; 
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            pointer-events: none; /* Completely prevents user interaction */
         }
 
         .hero-logo {
@@ -168,7 +190,7 @@
             display: flex;
             flex-direction: column;
             gap: 60px;
-            background: linear-gradient(180deg, #dddddd 0%, #f4f4f4 20%);
+            background: linear-gradient(180deg, rgba(221, 221, 221, 0.9) 0%, rgba(244, 244, 244, 0.9) 20%);
         }
 
         .info-card {
@@ -212,13 +234,12 @@
             overflow-x: hidden;
         }
 
-        /* Two Animated Scrolling Lines */
         .separator-container {
             position: relative;
             margin: 120px 0;
             width: 100vw;
             margin-left: calc(-50vw + 50%);
-            height: 50px; /* Reduced to bring lines much closer together */
+            height: 50px; 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -227,7 +248,6 @@
         .animated-line {
             height: 4px;
             width: 100%;
-            /* Creates a dashed pattern we can slide */
             background-image: repeating-linear-gradient(to right, #000 0, #000 24px, transparent 24px, transparent 48px);
             background-size: 48px 100%;
         }
@@ -263,7 +283,7 @@
             box-shadow: 6px 6px 0px #000;
             border-radius: 12px;
             white-space: nowrap;
-            z-index: 2; /* Keeps banner above the lines */
+            z-index: 2; 
         }
 
         .video-grid {
@@ -280,7 +300,6 @@
             gap: 15px;
         }
 
-        /* Updated for iframes! */
         .video-placeholder {
             width: 100%;
             aspect-ratio: 16 / 9;
@@ -315,6 +334,9 @@
 
         .video-meta h2 {
             font-size: 28px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 0 5px;
+            border-radius: 4px;
         }
 
         /* Section 4: Footer & Scroll Snapping */
@@ -374,6 +396,9 @@
     </header>
 
     <section id="hero">
+        <video autoplay loop muted playsinline disablePictureInPicture class="hero-video">
+            <source src="indexvid.mp4" type="video/mp4">
+        </video>
         <img src="BigLogo.png" alt="Multimedia Big Logo" class="hero-logo">
         <div class="scroll-down"></div>
     </section>
@@ -401,7 +426,7 @@
             <div class="video-item">
                 <div class="video-placeholder">
                     <iframe 
-                        src="" 
+                        src="https://www.youtube.com/embed/27OP_xk-zcg?si=yChccx4iccSHhpUH" 
                         title="Rotoscoping Video" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                         allowfullscreen>
@@ -416,7 +441,7 @@
             <div class="video-item">
                 <div class="video-placeholder">
                     <iframe 
-                        src="" 
+                        src="https://www.youtube.com/embed/5sHGKANDZlM?si=ci2cOjaF-A248VHl" 
                         title="Solar System Video" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                         allowfullscreen>
