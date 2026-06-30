@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blender Script Code - Multimedia Portfolio</title>
+    <style>
+        /* Import Albert Sans Font */
+        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@600;900&display=swap');
+
+        :root {
+            --bg-dark: #000;
+            --text-light: #fff;
+            --blue-banner: #0d6efd;
+            --vid-purple: #9b72ff;
+            --border-width: 4px;
+            --shadow-offset: 6px;
+            --shadow-color: #fff;
+        }
+
+        /* Global Reset & Typography */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Albert Sans', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-weight: 600; 
+            font-size: 14px;
+            overflow-x: hidden;
+            padding-top: 100px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, .heavy-font {
+            font-weight: 900; 
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Starfield Canvas */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Inverted Neo-Brutalist Classes */
+        .brutal-box-dark {
+            border: var(--border-width) solid var(--text-light);
+            border-radius: 16px;
+            background-color: var(--bg-dark);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--shadow-color);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .brutal-box-dark:hover {
+            transform: translate(2px, 2px);
+            box-shadow: calc(var(--shadow-offset) - 2px) calc(var(--shadow-offset) - 2px) 0px var(--shadow-color);
+        }
+
+        .brutal-btn-dark {
+            border: 3px solid var(--text-light);
+            border-radius: 8px;
+            background-color: #333; 
+            color: var(--text-light);
+            padding: 10px 24px;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--shadow-color);
+            transition: all 0.1s ease-in-out;
+        }
+
+        .brutal-btn-dark:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--shadow-color);
+            background-color: #444;
+        }
+
+        /* Header / Nav */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 1000;
+            pointer-events: none; 
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 150px; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .header-left a {
+            pointer-events: auto;
+            display: inline-block;
+        }
+
+        .header-left img { height: 40px; }
+        .header-right { display: flex; gap: 20px; pointer-events: auto; }
+
+        /* Structural Padding */
+        .section-padding {
+            padding: 60px 5vw;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            flex-grow: 1; /* Pushes footer to the bottom */
+            width: 100%;
+        }
+
+        /* Animated Separator Lines */
+        .separator-container {
+            position: relative;
+            margin: 40px 0 80px;
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            height: 50px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .animated-line-white {
+            height: 4px;
+            width: 100%;
+            background-image: repeating-linear-gradient(to right, var(--text-light) 0, var(--text-light) 24px, transparent 24px, transparent 48px);
+            background-size: 48px 100%;
+        }
+
+        .line-top { animation: scroll-left 3s linear infinite; }
+        .line-bottom { animation: scroll-right 3s linear infinite; }
+
+        @keyframes scroll-left { 0% { background-position: 0 0; } 100% { background-position: -48px 0; } }
+        @keyframes scroll-right { 0% { background-position: 0 0; } 100% { background-position: 48px 0; } }
+
+        /* Angled Banner */
+        .angled-banner-blue {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-4deg);
+            background-color: var(--blue-banner);
+            color: var(--text-light);
+            padding: 15px 40px;
+            font-size: 48px;
+            border: 4px solid var(--text-light);
+            box-shadow: 6px 6px 0px var(--text-light);
+            border-radius: 12px;
+            white-space: nowrap;
+            z-index: 2; 
+        }
+
+        /* Code Viewer Layout */
+        .code-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .code-header-bar h2 {
+            font-size: 32px;
+            margin: 0;
+        }
+
+        .code-display-box {
+            background-color: var(--bg-dark); /* Solid Black */
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .code-display-box pre {
+            margin: 0;
+            padding: 30px;
+            overflow-x: auto;
+            color: #a6e22e; /* Light green for terminal feel */
+            font-family: monospace;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #111;
+            color: #fff;
+            padding: 60px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 14px;
+            border-top: 2px solid var(--text-light);
+        }
+
+        .footer-left .red-text { color: #ff6b6b; font-weight: 900; }
+        .footer-left p { margin-top: 5px; }
+        .footer-right { text-align: right; }
+        .footer-right p { line-height: 1.5; }
+    </style>
+</head>
+<body id="top">
+
+    <canvas id="starfield"></canvas>
+
+    <header>
+        <div class="header-left">
+            <a href="index.html">
+                <img src="Logo.png" alt="Multimedia Logo">
+            </a>
+        </div>
+        <div class="header-right">
+            <a href="RotoPage.html" class="brutal-btn-dark">Rotoscope</a>
+            <a href="BlenderPage.html" class="brutal-btn-dark">3D Render</a>
+        </div>
+    </header>
+
+    <section class="section-padding">
+        
+        <div class="separator-container">
+            <div class="animated-line-white line-top"></div>
+            <div class="angled-banner-blue heavy-font">Source Code</div>
+            <div class="animated-line-white line-bottom"></div>
+        </div>
+
+        <div class="code-header-bar">
+            <div>
+                <h2 class="heavy-font">Solar System Generation</h2>
+                <p style="color: #aaa; margin-top: 5px;">Blender Python (bpy) Automation Script</p>
+            </div>
+            <button class="brutal-btn-dark" id="copy-btn">Copy to Clipboard</button>
+        </div>
+
+        <div class="brutal-box-dark code-display-box">
+            <pre><code id="code-display"></code></pre>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <a href="BlenderPage.html" class="brutal-btn-dark" style="background: var(--blue-banner); color: white;">&larr; Back to 3D Render</a>
+        </div>
+
+    </section>
+    
+    <footer>
+        <div class="footer-left">
+            <span class="red-text">All content on this website is strictly for academic use.</span>
+            <p>No content on the website is monetized, and attribution is given to specific resources.</p>
+        </div>
+        <div class="footer-right">
+            <p>Project by: BAYANI, John Emmanuel V.<br>BSIT-S-T-2A-T 2025-2026</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Code Injection for Viewer ---
+        const blenderScriptCode = `import bpy
+import math
+import os
+import random
+
+# Points directly to your folder in the C: drive
+texture_dir = r"C:\\SolarSys"
+space_texture = os.path.join(texture_dir, "SPACE.jpg")
+
+planet_textures = {
+    "Sun": os.path.join(texture_dir, "SUN.jpg"),
+    "Mercury": os.path.join(texture_dir, "MERCURY.jpg"),
+    "Venus": os.path.join(texture_dir, "VENUS.jpg"),
+    "Earth": os.path.join(texture_dir, "EARTH.jpg"),
+    "Moon": os.path.join(texture_dir, "MOON.jpg"),
+    "Mars": os.path.join(texture_dir, "MARS.jpg"),
+    "Jupiter": os.path.join(texture_dir, "JUPITER.jpg"),
+    "Saturn": os.path.join(texture_dir, "SATURN.jpg"),
+    "Uranus": os.path.join(texture_dir, "URANUS.jpg"),
+    "Neptune": os.path.join(texture_dir, "NEPTUNE.jpg"),
+    "SaturnRings": os.path.join(texture_dir, "SATURN RING.png"),
+    "Pluto": os.path.join(texture_dir, "PLUTO.jpg"),
+}
+
+# Helper function to extract F-Curves safely across all Blender versions
+def get_fcurves_from_action(action):
+    if not action:
+        return []
+    if hasattr(action, "fcurves") and action.fcurves is not None:
+        try: return list(action.fcurves)
+        except AttributeError: pass
+    fcurves = []
+    if hasattr(action, "layers"):
+        for layer in action.layers:
+            for strip in layer.strips:
+                if hasattr(strip, "channelbags"):
+                    for cb in strip.channelbags:
+                        fcurves.extend(list(cb.fcurves))
+    return fcurves
+
+# Helper function to set linear interpolation safely
+def set_linear_interpolation(obj):
+    if not obj or not obj.animation_data or not obj.animation_data.action:
+        return
+    fcurves = get_fcurves_from_action(obj.animation_data.action)
+    for fcurve in fcurves:
+        for kf in fcurve.keyframe_points:
+            kf.interpolation = 'LINEAR'
+
+# Helper function to add cycles modifiers safely
+def add_cycles_modifier(action):
+    fcurves = get_fcurves_from_action(action)
+    for curve in fcurves:
+        try:
+            modifier = curve.modifiers.new(type='CYCLES')
+            modifier.mode_after = 'REPEAT'
+        except:
+            try:
+                modifier = curve.modifiers.new(type='REPEAT')
+                modifier.mode_after = 'REPEAT'
+            except:
+                pass
+
+# Helper function to apply smooth shading safely
+def make_smooth_safe(obj):
+    if not obj: return
+    bpy.context.view_layer.objects.active = obj
+    try:
+        bpy.ops.object.shade_smooth(use_auto_smooth=False)
+    except:
+        bpy.ops.object.shade_smooth()
+
+def create_planet(name, radius, location, texture_path):
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=radius, location=location)
+    planet = bpy.context.object
+    planet.name = name
+    make_smooth_safe(planet)
+
+    mat = bpy.data.materials.new(name + "_Mat")
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    tex = mat.node_tree.nodes.new("ShaderNodeTexImage")
+    tex.image = bpy.data.images.load(texture_path)
+    mat.node_tree.links.new(bsdf.inputs['Base Color'], tex.outputs['Color'])
+    planet.data.materials.append(mat)
+    return planet
+
+def create_orbit(radius):
+    bpy.ops.curve.primitive_bezier_circle_add(radius=radius)
+    orbit = bpy.context.object
+    orbit.data.resolution_u = 64
+    orbit.data.fill_mode = 'HALF'
+    orbit.data.bevel_depth = 0.005
+    orbit.data.bevel_resolution = 3
+    return orbit
+
+# Automated Belt Builder using the Mercury image asset
+def spawn_belt_system(name, inner_radius, outer_radius, count, speed_period, z_spread=0.15):
+    bpy.ops.object.empty_add(location=(0, 0, 0))
+    belt_hub = bpy.context.object
+    belt_hub.name = f"{name}_Orbit_Center"
+    
+    mercury_mat = bpy.data.materials.get("Mercury_Mat")
+    random.seed(42)
+    
+    for i in range(count):
+        radius = random.uniform(inner_radius, outer_radius)
+        angle = random.uniform(0, 2 * math.pi)
+        
+        x = math.cos(angle) * radius
+        y = math.sin(angle) * radius
+        z = random.uniform(-z_spread, z_spread)
+        
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=random.uniform(0.04, 0.12), location=(x, y, z))
+        rock = bpy.context.object
+        rock.name = f"{name}_Rock_{i}"
+        rock.scale = (random.uniform(0.6, 1.4), random.uniform(0.6, 1.4), random.uniform(0.6, 1.4))
+        
+        if mercury_mat:
+            rock.data.materials.append(mercury_mat)
+            
+        rock.parent = belt_hub
+
+    # Animate entire belt center rotation ring
+    belt_hub.rotation_euler = (0, 0, 0)
+    belt_hub.keyframe_insert(data_path="rotation_euler", frame=1)
+    belt_hub.rotation_euler = (0, 0, 2 * math.pi)
+    belt_hub.keyframe_insert(data_path="rotation_euler", frame=speed_period * 24)
+    set_linear_interpolation(belt_hub)
+    return belt_hub
+
+# Set up world background with space texture
+world = bpy.context.scene.world or bpy.data.worlds.new("World")
+bpy.context.scene.world = world
+world.use_nodes = True
+world_nodes = world.node_tree.nodes
+world_links = world.node_tree.links
+world_nodes.clear()
+
+background = world_nodes.new('ShaderNodeBackground')
+environment = world_nodes.new('ShaderNodeTexEnvironment')
+mapping = world_nodes.new('ShaderNodeMapping')
+texcoord = world_nodes.new('ShaderNodeTexCoord')
+output = world_nodes.new('ShaderNodeOutputWorld')
+
+environment.image = bpy.data.images.load(space_texture)
+world_links.new(texcoord.outputs['Generated'], mapping.inputs['Vector'])
+world_links.new(mapping.outputs['Vector'], environment.inputs['Vector'])
+world_links.new(environment.outputs['Color'], background.inputs['Color'])
+world_links.new(background.outputs['Background'], output.inputs['Surface'])
+
+# Set up central point light source so everything is lit nicely
+bpy.ops.object.light_add(type='POINT', location=(0, 0, 0))
+sun_light = bpy.context.object
+sun_light.name = "Sun_System_Light"
+sun_light.data.energy = 2500.0
+
+# Create the Sun
+sun = create_planet("Sun", 2.0, (0, 0, 0), planet_textures["Sun"])
+
+planet_data = [
+    ("Mercury", 0.3, 4),
+    ("Venus", 0.5, 6),
+    ("Earth", 0.5, 8),
+    ("Moon", 0.13, 8.6),
+    ("Mars", 0.4, 10),
+    ("Jupiter", 1.1, 13),
+    ("Saturn", 1.0, 16),
+    ("Uranus", 0.7, 19),
+    ("Neptune", 0.7, 22),
+    ("Pluto", 0.2, 25),
+]
+
+orbital_periods = {
+    "Mercury": 1, "Venus": 2, "Earth": 3, "Moon": 1, "Mars": 4,
+    "Jupiter": 6, "Saturn": 8, "Uranus": 15, "Neptune": 22, "Pluto": 30,
+}
+
+for name, size, orbit_radius in planet_data:
+    loc = (orbit_radius, 0, 0)
+    tex = planet_textures[name]
+    planet = create_planet(name, size, loc, tex)
+    orbit = create_orbit(orbit_radius)
+    
+    if name == "Moon":
+        bpy.ops.object.empty_add(location=(8, 0, 0))
+        moon_empty = bpy.context.object
+        moon_empty.name = "Moon_Earth_Orbit_Center"
+        
+        planet.location = (0.6, 0, 0)
+        moon_orbit = create_orbit(0.6)
+        moon_orbit.parent = moon_empty
+        planet.parent = moon_empty
+        
+        earth_empty = bpy.data.objects["Earth_Orbit_Center"]
+        moon_empty.parent = earth_empty
+        
+        period = orbital_periods["Moon"]
+        moon_empty.rotation_euler = (0, 0, 0)
+        moon_empty.keyframe_insert(data_path="rotation_euler", frame=1)
+        moon_empty.rotation_euler = (0, 0, 2 * math.pi)
+        moon_empty.keyframe_insert(data_path="rotation_euler", frame=period * 24)
+        set_linear_interpolation(moon_empty)
+                
+    elif name in orbital_periods:
+        bpy.ops.object.empty_add(location=(0, 0, 0))
+        empty = bpy.context.object
+        empty.name = f"{name}_Orbit_Center"
+        planet.parent = empty
+        
+        period = orbital_periods[name]
+        empty.rotation_euler = (0, 0, 0)
+        empty.keyframe_insert(data_path="rotation_euler", frame=1)
+        empty.rotation_euler = (0, 0, 2 * math.pi)
+        empty.keyframe_insert(data_path="rotation_euler", frame=period * 24)
+        set_linear_interpolation(empty)
+
+# ===========================================================================
+# NEW: ADD SPACESHIP ORBITING EARTH (FASTER THAN THE MOON)
+# ===========================================================================
+# 1. Create a sleek little low-poly shuttle mesh (positioned inside the Moon's loop radius)
+bpy.ops.mesh.primitive_cone_add(radius1=0.03, radius2=0.0, depth=0.12, location=(0.35, 0, 0))
+spaceship = bpy.context.object
+spaceship.name = "Spaceship_Body"
+
+# Orient the cone so its nose points forward along the forward rotation arc
+spaceship.rotation_euler = (0, math.radians(90), 0)
+bpy.ops.object.transform_apply(rotation=True)
+
+# Give it a bright red material so you can clearly spot it zipping around
+ship_mat = bpy.data.materials.new("Spaceship_Material")
+ship_mat.use_nodes = True
+ship_bsdf = ship_mat.node_tree.nodes.get("Principled BSDF")
+ship_bsdf.inputs['Base Color'].default_value = (1.0, 0.1, 0.1, 1.0)
+spaceship.data.materials.append(ship_mat)
+
+# 2. Establish a unique rotation tracking empty hub
+bpy.ops.object.empty_add(location=(0, 0, 0))
+ship_hub = bpy.context.object
+ship_hub.name = "Spaceship_Orbit_Hub"
+spaceship.parent = ship_hub
+
+# Lock the spaceship's hub directly onto Earth's master transformation center
+earth_center = bpy.data.objects.get("Earth_Orbit_Center")
+if earth_center:
+    ship_hub.parent = earth_center
+
+# 3. Insert rotation keyframes (14 frames per loop vs the Moon's 24 frames)
+ship_hub.rotation_euler = (0, 0, 0)
+ship_hub.keyframe_insert(data_path="rotation_euler", frame=1)
+ship_hub.rotation_euler = (0, 0, 2 * math.pi)
+ship_hub.keyframe_insert(data_path="rotation_euler", frame=14)
+set_linear_interpolation(ship_hub)
+# ===========================================================================
+
+# BUILD THE ASTEROID BELT (Between Mars [10] and Jupiter [13])
+spawn_belt_system("MainAsteroidBelt", inner_radius=11.2, outer_radius=12.2, count=150, speed_period=5)
+
+# BUILD THE KUIPER BELT (Past Pluto [25])
+spawn_belt_system("KuiperBelt", inner_radius=26.5, outer_radius=30.0, count=250, speed_period=35, z_spread=0.5)
+
+# Set animation lengths
+bpy.context.scene.frame_end = 900
+bpy.context.scene.render.fps = 30
+bpy.context.scene.use_preview_range = False
+bpy.context.scene.frame_start = 1
+
+# Apply cycle repetition logic to all active actions
+for action in bpy.data.actions:
+    add_cycles_modifier(action)
+
+bpy.context.scene.render.use_lock_interface = True
+bpy.context.scene.sync_mode = 'AUDIO_SYNC'
+
+# Create Saturn's rings
+bpy.ops.mesh.primitive_torus_add(location=(16, 0, 0), major_radius=1.2, minor_radius=0.05)
+rings = bpy.context.object
+rings.name = "Saturn_Rings"
+make_smooth_safe(rings)
+
+mat = bpy.data.materials.new("SaturnRing_Mat")
+mat.use_nodes = True
+bsdf = mat.node_tree.nodes.get("Principled BSDF")
+tex = mat.node_tree.nodes.new("ShaderNodeTexImage")
+tex.image = bpy.data.images.load(planet_textures["SaturnRings"])
+mat.node_tree.links.new(bsdf.inputs['Base Color'], tex.outputs['Color'])
+rings.data.materials.append(mat)
+
+saturn_empty = bpy.data.objects["Saturn_Orbit_Center"]
+rings.parent = saturn_empty
+
+# Add default overhead system view camera
+bpy.context.scene.frame_end = 3000
+
+# Find or create the master scene camera
+cam = bpy.context.scene.camera
+if not cam:
+    bpy.ops.object.camera_add()
+    cam = bpy.context.object
+    bpy.context.scene.camera = cam
+
+# Clear any old camera keyframes if re-running the script
+cam.animation_data_clear()
+
+# --- PHASE 1: Angled Perspective View (Frames 1 to 1500) ---
+# Lock the camera into the exact low-angled viewpoint from your first screenshot
+cam.location = (0, -125, 48)
+cam.rotation_euler = (math.radians(72), 0, 0)
+
+# Keyframe the start of the hold
+cam.keyframe_insert(data_path="location", frame=1)
+cam.keyframe_insert(data_path="rotation_euler", frame=1)
+
+# Keyframe the end of the hold at exactly 50 seconds (Frame 1500)
+cam.keyframe_insert(data_path="location", frame=1500)
+cam.keyframe_insert(data_path="rotation_euler", frame=1500)
+
+
+# --- PHASE 2: Smooth Transition to Top-Down View (Frames 1500 to 3000) ---
+# Glides smoothly to a perfect birds-eye layout centered on the Sun by second 100
+cam.location = (0, 0, 150)
+cam.rotation_euler = (0, 0, 0)
+
+cam.keyframe_insert(data_path="location", frame=3000)
+cam.keyframe_insert(data_path="rotation_euler", frame=3000)
+
+
+# Make the camera acceleration look completely professional and organic
+if cam.animation_data and cam.animation_data.action:
+    for fc in cam.animation_data.action.fcurves:
+        for kf in fc.keyframe_points:
+            kf.interpolation = 'BEZIER' # Eases out of the hold and eases into the top-down stop
+
+print("Cinematic 100-second camera timeline fully finalized and integrated!")`;
+
+        document.getElementById('code-display').textContent = blenderScriptCode;
+
+        /* --- Copy to Clipboard Functionality --- */
+        const copyBtn = document.getElementById('copy-btn');
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(blenderScriptCode).then(() => {
+                copyBtn.textContent = 'Copied!';
+                copyBtn.style.backgroundColor = '#198754'; // Success green
+                copyBtn.style.borderColor = '#198754';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy to Clipboard';
+                    copyBtn.style.backgroundColor = '#333'; // Back to brutalist dark grey
+                    copyBtn.style.borderColor = '#fff';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+
+        /* --- Canvas Parallax Starfield --- */
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let stars = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function initStars() {
+            stars = [];
+            const numStars = Math.floor((window.innerWidth * window.innerHeight) / 3000);
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    size: Math.random() * 1.5 + 0.5,
+                    parallaxFactor: Math.random() * 0.3 + 0.05
+                });
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#ffffff';
+            
+            const scrollY = window.scrollY;
+
+            stars.forEach(star => {
+                let offsetY = (star.y - (scrollY * star.parallaxFactor)) % height;
+                if (offsetY < 0) offsetY += height; 
+
+                ctx.beginPath();
+                ctx.arc(star.x, offsetY, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', () => {
+            resize();
+            initStars();
+        });
+
+        resize();
+        initStars();
+        draw();
+    </script>
+</body>
+</html>
