@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Calculator Code - Multimedia Portfolio</title>
+    <style>
+        /* Import Albert Sans Font */
+        @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@600;900&display=swap');
+
+        :root {
+            --bg-dark: #000;
+            --text-light: #fff;
+            --blue-banner: #0d6efd;
+            --vid-purple: #9b72ff;
+            --border-width: 4px;
+            --shadow-offset: 6px;
+            --shadow-color: #fff;
+        }
+
+        /* Global Reset & Typography */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Albert Sans', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-weight: 600; 
+            font-size: 14px;
+            overflow-x: hidden;
+            padding-top: 100px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, .heavy-font {
+            font-weight: 900; 
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Starfield Canvas */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Inverted Neo-Brutalist Classes */
+        .brutal-box-dark {
+            border: var(--border-width) solid var(--text-light);
+            border-radius: 16px;
+            background-color: var(--bg-dark);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--shadow-color);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .brutal-box-dark:hover {
+            transform: translate(2px, 2px);
+            box-shadow: calc(var(--shadow-offset) - 2px) calc(var(--shadow-offset) - 2px) 0px var(--shadow-color);
+        }
+
+        .brutal-btn-dark {
+            border: 3px solid var(--text-light);
+            border-radius: 8px;
+            background-color: #333; 
+            color: var(--text-light);
+            padding: 10px 24px;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--shadow-color);
+            transition: all 0.1s ease-in-out;
+        }
+
+        .brutal-btn-dark:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--shadow-color);
+            background-color: #444;
+        }
+
+        /* Header / Nav */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 1000;
+            pointer-events: none; 
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 150px; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .header-left a {
+            pointer-events: auto;
+            display: inline-block;
+        }
+
+        .header-left img { height: 40px; }
+        .header-right { display: flex; gap: 20px; pointer-events: auto; }
+
+        /* Structural Padding */
+        .section-padding {
+            padding: 60px 5vw;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            flex-grow: 1; /* Pushes footer to the bottom */
+            width: 100%;
+        }
+
+        /* Animated Separator Lines */
+        .separator-container {
+            position: relative;
+            margin: 40px 0 80px;
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            height: 50px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .animated-line-white {
+            height: 4px;
+            width: 100%;
+            background-image: repeating-linear-gradient(to right, var(--text-light) 0, var(--text-light) 24px, transparent 24px, transparent 48px);
+            background-size: 48px 100%;
+        }
+
+        .line-top { animation: scroll-left 3s linear infinite; }
+        .line-bottom { animation: scroll-right 3s linear infinite; }
+
+        @keyframes scroll-left { 0% { background-position: 0 0; } 100% { background-position: -48px 0; } }
+        @keyframes scroll-right { 0% { background-position: 0 0; } 100% { background-position: 48px 0; } }
+
+        /* Angled Banner */
+        .angled-banner-blue {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-4deg);
+            background-color: var(--blue-banner);
+            color: var(--text-light);
+            padding: 15px 40px;
+            font-size: 48px;
+            border: 4px solid var(--text-light);
+            box-shadow: 6px 6px 0px var(--text-light);
+            border-radius: 12px;
+            white-space: nowrap;
+            z-index: 2; 
+        }
+
+        /* Code Viewer Layout */
+        .code-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .code-header-bar h2 {
+            font-size: 32px;
+            margin: 0;
+        }
+
+        .code-display-box {
+            background-color: var(--bg-dark); /* Solid Black */
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .code-display-box pre {
+            margin: 0;
+            padding: 30px;
+            overflow-x: auto;
+            color: #a6e22e; /* Light green for terminal feel */
+            font-family: monospace;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #111;
+            color: #fff;
+            padding: 60px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 14px;
+            border-top: 2px solid var(--text-light);
+        }
+
+        .footer-left .red-text { color: #ff6b6b; font-weight: 900; }
+        .footer-left p { margin-top: 5px; }
+        .footer-right { text-align: right; }
+        .footer-right p { line-height: 1.5; }
+    </style>
+</head>
+<body id="top">
+
+    <canvas id="starfield"></canvas>
+
+    <header>
+        <div class="header-left">
+            <a href="index.html">
+                <img src="Logo.png" alt="Multimedia Logo">
+            </a>
+        </div>
+        <div class="header-right">
+            <a href="RotoPage.html" class="brutal-btn-dark">Rotoscope</a>
+            <a href="BlenderPage.html" class="brutal-btn-dark">3D Render</a>
+        </div>
+    </header>
+
+    <section class="section-padding">
+        
+        <div class="separator-container">
+            <div class="animated-line-white line-top"></div>
+            <div class="angled-banner-blue heavy-font">Source Code</div>
+            <div class="animated-line-white line-bottom"></div>
+        </div>
+
+        <div class="code-header-bar">
+            <div>
+                <h2 class="heavy-font">Barebones Calculator</h2>
+                <p style="color: #aaa; margin-top: 5px;">HTML & JavaScript Logic Structure</p>
+            </div>
+            <button class="brutal-btn-dark" id="copy-btn">Copy to Clipboard</button>
+        </div>
+
+        <div class="brutal-box-dark code-display-box">
+            <pre><code id="code-display"></code></pre>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <a href="BlenderPage.html" class="brutal-btn-dark" style="background: var(--blue-banner); color: white;">&larr; Back to 3D Render</a>
+        </div>
+
+    </section>
+    
+    <footer>
+        <div class="footer-left">
+            <span class="red-text">All content on this website is strictly for academic use.</span>
+            <p>No content on the website is monetized, and attribution is given to specific resources.</p>
+        </div>
+        <div class="footer-right">
+            <p>Project by: BAYANI, John Emmanuel V.<br>BSIT-S-T-2A-T 2025-2026</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Code Injection for Viewer ---
+        const barebonesCode = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barebones Age Calculator</title>
+</head>
+<body>
+    <h2>Planetary Age Calculator</h2>
+    
+    <label for="earth-age">My present age on Earth is...</label>
+    <input type="number" id="earth-age" placeholder="Enter age..." min="0">
+    
+    <hr>
+    
+    <div id="planet-results">
+        <p>Mercury: <span id="merc-age">0.00</span> (<span id="merc-rev">Revolution: 0</span>)</p>
+        <p>Venus: <span id="ven-age">0.00</span> (<span id="ven-rev">Revolution: 0</span>)</p>
+        <p>Mars: <span id="mars-age">0.00</span> (<span id="mars-rev">Revolution: 0</span>)</p>
+        <p>Jupiter: <span id="jup-age">0.00</span> (<span id="jup-rev">Revolution: 0</span>)</p>
+        <p>Saturn: <span id="sat-age">0.00</span> (<span id="sat-rev">Revolution: 0</span>)</p>
+        <p>Uranus: <span id="ura-age">0.00</span> (<span id="ura-rev">Revolution: 0</span>)</p>
+        <p>Neptune: <span id="nep-age">0.00</span> (<span id="nep-rev">Revolution: 0</span>)</p>
+        <p>Pluto: <span id="plu-age">0.00</span> (<span id="plu-rev">Revolution: 0</span>)</p>
+    </div>
+
+    <script>
+        const planetsData = {
+            merc: 0.24,
+            ven: 0.615,
+            mars: 1.88,
+            jup: 11.86,
+            sat: 29.46,
+            ura: 84.02,
+            nep: 164.77,
+            plu: 247.94
+        };
+
+        const earthInput = document.getElementById('earth-age');
+
+        earthInput.addEventListener('input', (e) => {
+            const earthAge = parseFloat(e.target.value) || 0;
+
+            for (const [prefix, orbitEY] of Object.entries(planetsData)) {
+                const calculatedAge = earthAge / orbitEY;
+                const revCount = Math.floor(calculatedAge);
+
+                document.getElementById(\`\${prefix}-age\`).textContent = calculatedAge.toFixed(2);
+                document.getElementById(\`\${prefix}-rev\`).textContent = \`Revolution: \${revCount}\`;
+            }
+        });
+    <\/script>
+</body>
+</html>`;
+
+        document.getElementById('code-display').textContent = barebonesCode;
+
+        // --- Copy to Clipboard Functionality ---
+        const copyBtn = document.getElementById('copy-btn');
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(barebonesCode).then(() => {
+                copyBtn.textContent = 'Copied!';
+                copyBtn.style.backgroundColor = '#198754'; // Success green
+                copyBtn.style.borderColor = '#198754';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy to Clipboard';
+                    copyBtn.style.backgroundColor = '#333'; // Back to brutalist dark grey
+                    copyBtn.style.borderColor = '#fff';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+
+        // --- Canvas Parallax Starfield (Kept from Original Design) ---
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let stars = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function initStars() {
+            stars = [];
+            const numStars = Math.floor((window.innerWidth * window.innerHeight) / 3000);
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    size: Math.random() * 1.5 + 0.5,
+                    parallaxFactor: Math.random() * 0.3 + 0.05
+                });
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#ffffff';
+            
+            const scrollY = window.scrollY;
+
+            stars.forEach(star => {
+                let offsetY = (star.y - (scrollY * star.parallaxFactor)) % height;
+                if (offsetY < 0) offsetY += height; 
+
+                ctx.beginPath();
+                ctx.arc(star.x, offsetY, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', () => {
+            resize();
+            initStars();
+        });
+
+        resize();
+        initStars();
+        draw();
+    </script>
+</body>
+</html>
